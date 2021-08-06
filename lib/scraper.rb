@@ -1,4 +1,4 @@
 require 'nokogiri'
 require 'open-uri'
 
-html = open("https://flatironschool.com/")
+html = URI.open("https://flatironschool.com/")

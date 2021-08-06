@@ -12,7 +12,7 @@ pertinent data from that HTML. In this reading, we'll take a brief look at what
 scraping is and how to accomplish it.
 
 A more thorough code-along is coming up next, but if you would like to follow
-along, `lib/scraper.lib` is provided for you.
+along, `lib/scraper.rb` is provided for you.
 
 ## What is Scraping and Why Use it?
 
@@ -93,129 +93,50 @@ issues with this, check out the following documentation:
 
 ### Opening a Web Page as HTML with Nokogiri and open-uri
 
-Let's say we have a file, `scraper.rb` which is responsible for (you guessed it)
+We have a file, `lib/scraper.rb` which is responsible for (you guessed it)
 scraping. We need to require Nokogiri and open-uri:
 
 ```ruby
 require 'nokogiri'
 require 'open-uri'
-
-# more code coming soon!
 ```
 
 We can use the following line to grab the HTML that makes up the Flatiron
-School's landing page at flatironschool.com:
+School's landing page at
+[https://flatironschool.com](https://flatironschool.com):
 
 ```ruby
-html = open("https://flatironschool.com/")
+html = URI.open("https://flatironschool.com/")
 ```
+
+Follow along from here and update the `lib/scraper.rb` file with the rest of the
+code as we go.
 
 Next, we'll use the `Nokogiri::HTML` method to take the string of HTML returned
 by open-uri's `open` method and convert it into a NodeSet (aka, a bunch of
 nested "nodes") that we can easily play around with.
 
 ```ruby
-Nokogiri::HTML(html)
+Nokogiri::HTML5(html)
 ```
 
 Let's save the HTML document in a variable, `doc` that we can then operate on:
 
 ```ruby
-doc = Nokogiri::HTML(html)
+doc = Nokogiri::HTML5(html)
 ```
 
-If we were to `puts` out `doc` right now, we'd see something like this in our
-terminal:
+If we were to `puts` out `doc` right now and run the code with
+`ruby lib/scraper.rb`, we'd see something like this in our terminal:
 
 ```html
 <!DOCTYPE html>
-<html lang="en" class="gr__flatironschool_com" data-react-helmet="lang">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="google-site-verification"
-      content="X--Dsxcv97NzPomhlz80wswUgUOF8iMxYhmaY-qNHFY"
-    />
-    <link
-      rel="preload"
-      href="https://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmWUlfBBc4AMP6lQ.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="https://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmSU5fBBc4AMP6lQ.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="https://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmEU9fBBc4AMP6lQ.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      href="https://fonts.gstatic.com/s/roboto/v18/KFOkCnqEu92Fr1Mu51xIIzIXKMny.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-    <script
-      type="text/javascript"
-      async=""
-      src="https://widget.intercom.io/widget/j4d6dyie"
-    ></script>
-    <script
-      src="https://connect.facebook.net/signals/plugins/inferredEvents.js?v=2.9.4"
-      async=""
-    ></script>
-    <script
-      src="https://connect.facebook.net/signals/config/1706055166302798?v=2.9.4&amp;r=stable"
-      async=""
-    ></script>
-    <script
-      async=""
-      src="https://connect.facebook.net/en_US/fbevents.js"
-    ></script>
-    <script
-      type="text/javascript"
-      async=""
-      src="https://www.google-analytics.com/analytics.js"
-    ></script>
-    <script
-      type="text/javascript"
-      async=""
-      src="https://www.google-analytics.com/plugins/ua/linkid.js"
-    ></script>
-    <script
-      src="//js.hs-analytics.net/analytics/1568493600000/69751.js"
-      type="text/javascript"
-      id="hs-analytics"
-    ></script>
-    <script
-      src="https://js.hsadspixel.net/fb.js"
-      type="text/javascript"
-      id="hs-ads-pixel-69751"
-      data-ads-portal-id="69751"
-      data-ads-env="prod"
-      data-loader="hs-scriptloader"
-      data-hsjs-portal="69751"
-      data-hsjs-env="prod"
-    ></script>
-    ...
+    <!-- and a lot more... -->
   </head>
 </html>
 ```
@@ -223,94 +144,30 @@ terminal:
 If you look through further, you can find the `body` with lots of content.
 
 ```html
-<body data-gr-c-s-loaded="true">
-  <div
-    id="pull-down"
-    class="hb-50 hellobar hb-bottom-right se-714205 inverted"
-    style="background-color: rgb(255, 255, 255);"
-  >
-    <div class="hellobar-arrow">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="11px"
-        height="11px"
-        viewBox="43.6 92.5 315 315"
-      >
-        <path
-          d="M49.6 92.5c-3.3 0-6 2.7-6 6v303c0 3.3 2.7 6 6 6h303c3.3 0 6-2.7 6-6v-303c0-3.3-2.7-6-6-6H49.6zM229.6 254.3c-3.3 0-6 2.7-6 6V360c0 3.3-2.7 6-6 6h-33c-3.3 0-6-2.7-6-6v-99.7c0-3.3-2.7-6-6-6H99.2c-3.3 0-4.2-2-2-4.5l99.9-111.4c2.2-2.5 5.8-2.5 8 0l99.9 111.4c2.2 2.5 1.3 4.5-2 4.5H229.6z"
-        ></path>
-      </svg>
-    </div>
-  </div>
-  <iframe
-    src="about:blank"
-    id="o8689c8c25e49f24d1d4bd1d49101d50041f42abc-container"
-    class="HB-Slider hb-animated azuki hb-bottom-right"
-    name="o8689c8c25e49f24d1d4bd1d49101d50041f42abc-container-0"
-    style="display: none;"
-  ></iframe>
+<body>
   <noscript>
     <iframe
       src="https://www.googletagmanager.com/ns.html?id=GTM-KZZ9JB"
       height="0"
       width="0"
       style="display: none; visibility: hidden"
-    ></iframe>
-  </noscript>
+    ></iframe
+  ></noscript>
   <noscript id="gatsby-noscript"
     >This app works best with JavaScript enabled.</noscript
   >
-  <div id="___gatsby">
-    <div
-      style="outline:none"
-      tabindex="-1"
-      role="group"
-      id="gatsby-focus-wrapper"
-    >
-      <header
-        class="siteHeader-2Zios8 blue-2siWYz normal-1mR2Ud"
-        name="site-header"
-      >
-        <picture>
-          <source
-            type="image/webp"
-            media="(min-width: 1920px)"
-            srcset="
-              https://images.ctfassets.net/hkpf2qd2vxgx/6uCU1D03JXktRj8kwW7Nip/a2572151bf67c3552d88139ee0299ef2/homepage-hero.jpg?fm=webp&amp;q=85&amp;w=1920,
-              https://images.ctfassets.net/hkpf2qd2vxgx/6uCU1D03JXktRj8kwW7Nip/a2572151bf67c3552d88139ee0299ef2/homepage-hero.jpg?fm=webp&amp;q=40&amp;w=3840 2x
-            "
-          />
-          <source
-            type="image/jpeg"
-            media="(min-width: 1920px)"
-            srcset="
-              https://images.ctfassets.net/hkpf2qd2vxgx/6uCU1D03JXktRj8kwW7Nip/a2572151bf67c3552d88139ee0299ef2/homepage-hero.jpg?fl=progressive&amp;fm=jpg&amp;q=85&amp;w=1920,
-              https://images.ctfassets.net/hkpf2qd2vxgx/6uCU1D03JXktRj8kwW7Nip/a2572151bf67c3552d88139ee0299ef2/homepage-hero.jpg?fl=progressive&amp;fm=jpg&amp;q=40&amp;w=3840 2x
-            "
-          />
-          <source
-            type="image/webp"
-            media="(min-width: 1280px)"
-            srcset="
-              https://images.ctfassets.net/hkpf2qd2vxgx/6uCU1D03JXktRj8kwW7Nip/a2572151bf67c3552d88139ee0299ef2/homepage-hero.jpg?fm=webp&amp;q=85&amp;w=1280,
-              https://images.ctfassets.net/hkpf2qd2vxgx/6uCU1D03JXktRj8kwW7Nip/a2572151bf67c3552d88139ee0299ef2/homepage-hero.jpg?fm=webp&amp;q=40&amp;w=2560 2x
-            "
-          />
-          ...</picture
-        >
-      </header>
-    </div>
-  </div>
+  <div id="___gatsby"></div>
 </body>
 ```
 
 On and on. It is _a lot_ to go through, and it can also look pretty messy and
 difficult to read. But don't worry! Nokogiri will help us parse this. What we're
 looking at here is all of the HTML that makes up the web page found at
-[www.flatironschool.com][]. The massive lines above are actually a snapshot of
-that HTML converted into a structure of nested nodes by Nokogiri.
+[https://flatironschool.com][flatironschool.com]. The massive lines above are
+actually a snapshot of that HTML converted into a structure of nested nodes by
+Nokogiri.
 
-[www.flatironschool.com]: http://flatironschool.com/
+[flatironschool.com]: http://flatironschool.com/
 
 #### What are Nested Nodes?
 
@@ -334,15 +191,15 @@ own. That's okay though. Just follow along with the reading and, if you want to
 try it out, feel free to use the examples provided to guide you in scraping
 content that is present on the page.
 
-Visit [this Flatiron School link][] and use your browser's developer tools to
+Visit [this Flatiron School link][flatironschool.com] and use your browser's developer tools to
 inspect the page. (You can just right-click anywhere on the page and select
 "inspect element".)
 
-[this flatiron school link]: http://flatironschool.com/
+[flatironschool.com]: http://flatironschool.com/
 
 You should see something like this:
 
-![browser console example](https://curriculum-content.s3.amazonaws.com/web-development/ruby/scraping_flatironschool_console_example_01.png)
+![browser console example](https://curriculum-content.s3.amazonaws.com/module-1/scraping-reading/flatiron-page.png)
 
 The [element inspector][] view on the bottom half of the page is revealing all of
 the page's HTML to us! In fact, the HTML it is showing us is _exactly the same_
@@ -387,7 +244,7 @@ _exactly the same_ HTML that makes up the web page. Let's go back to
 inspector to find the selector of a certain piece of our HTML. In this case,
 we'll look the element containing the text 'Change things':
 
-![element inspector](https://curriculum-content.s3.amazonaws.com/web-development/ruby/scraping_flatironschool_inspect_css.png)
+![element inspector](https://curriculum-content.s3.amazonaws.com/module-1/scraping-reading/change-things.png)
 
 In order to identify the CSS selector, click the button in the upper left corner of the console pane that looks like a mouse icon partially in a box.
 
@@ -401,7 +258,7 @@ HTML element for us. Notice that:
 is highlighted in the above image. If you click on the carrot at the left end of
 that line, it will open up to show you what that element contains (with lots of spacing around it):
 
-```html
+```txt
 "Change things."
 ```
 
@@ -416,7 +273,9 @@ In our `scraper.rb` file, we had the following code:
 require 'nokogiri'
 require 'open-uri'
 
-doc = Nokogiri::HTML(open("https://flatironschool.com/"))
+html = URI.open("https://flatironschool.com/")
+
+doc = Nokogiri.HTML5(html)
 ```
 
 Let's call `.css` on `doc` and give it the argument of our CSS selector:
@@ -425,15 +284,17 @@ Let's call `.css` on `doc` and give it the argument of our CSS selector:
 require 'nokogiri'
 require 'open-uri'
 
-doc = Nokogiri::HTML(open("https://flatironschool.com/"))
-doc.css(".headline-26OIBN")
+html = URI.open("https://flatironschool.com/")
+
+doc = Nokogiri.HTML5(html)
+p doc.css(".headline-26OIBN")
 ```
 
-If we were to copy and paste the above code into IRB, the last line
-would return something like:
+Try running this code now with `ruby lib/scraper.rb` and you should see something
+like this:
 
-```text
-[#<Nokogiri::XML::Element:0x3fdb39ac8380 name="h1" attributes=[#<Nokogiri::XML::Attr:0x3fdb39ac86dc name="class" value="headline-26OIBN">] children=[#<Nokogiri::XML::Text:0x3fdb39ac5d60 "Change things.">]>]
+```rb
+# => [#<Nokogiri::XML::Element:0x3fdb39ac8380 name="h1" attributes=[#<Nokogiri::XML::Attr:0x3fdb39ac86dc name="class" value="headline-26OIBN">] children=[#<Nokogiri::XML::Text:0x3fdb39ac5d60 "Change things.">]>]
 ```
 
 Although dense, it is possible to figure some things out. First of all,
@@ -450,10 +311,8 @@ doc.css(".headline-26OIBN").text
 Using `.text` allows us to access text content inside an element scraped by Nokogiri. Run in IRB, we'd see something like this returned:
 
 ```rb
-# => "Change things."
+# => "Change things"
 ```
-
-> **Aside**: In general adding `.strip` to the end will allow us to clean up the extra whitespace and simply return the text contained inside the element.
 
 An interesting thing to note: If you're coding along in the provided
 `lib/scraper.rb` file, using `puts` or `print` on `doc.css` will cause the **HTML
@@ -466,12 +325,12 @@ puts doc.css(".headline-26OIBN")
 Will print out:
 
 ```rb
-# => <h1 class="headline-26OIBN">Change things.</h1>
+# => <h1 class="headline-26OIBN">Change things</h1>
 ```
 
-However, just as before, we can just add `.text` (and `.strip`) and get only the
-text contained inside the element that we want. Alternatively, using `p` will
-produce the array-like object we saw from before.
+However, just as before, we can just add `.text` and get only the text contained
+inside the element that we want. Alternatively, using `p` will produce the
+array-like object we saw from before.
 
 We did it! We used Nokogiri to get the HTML of a web page. We used the element
 inspector in the browser to ID the CSS selector of the data we wanted to scrape.
@@ -489,7 +348,7 @@ from these elements.
 
 [page]: flatironschool.com
 
-![courses](https://curriculum-content.s3.amazonaws.com/web-development/ruby/scraping_flatironschool_courses.png)
+![courses](https://curriculum-content.s3.amazonaws.com/module-1/scraping-reading/courses.png)
 
 This time, if we hover over one of the elements containing a course, we'll see
 there are two classes assigned, `inlineMobileLeft-2Yo002`, and
@@ -500,10 +359,10 @@ two to try and get only the content we need:
 require 'nokogiri'
 require 'open-uri'
 
-html = open("https://flatironschool.com/")
-doc = Nokogiri::HTML(html)
+html = URI.open("https://flatironschool.com/")
+doc = Nokogiri::HTML5(html)
 
-doc.css(".inlineMobileLeft-2Yo002.imageTextBlockGrid2-3jXtmC")
+p doc.css(".inlineMobileLeft-2Yo002.imageTextBlockGrid2-3jXtmC")
 ```
 
 > Notice that each class is listed without spaces! To make sure we only select
@@ -512,11 +371,12 @@ doc.css(".inlineMobileLeft-2Yo002.imageTextBlockGrid2-3jXtmC")
 > In order to make our selector more `strict`, we'll target the correct section
 > first and then the elements containing a course.
 
-Even though the Nokogiri gem returns a `Nokogiri::XML::NodeSet` (which looks like an Array in Ruby), we can use Ruby methods, such as `.each` and `.collect`,
+Even though the Nokogiri gem returns a `Nokogiri::XML::NodeSet` (which looks
+like an Array in Ruby), we can use Ruby methods, such as `.each` and `.collect`,
 to iterate over it.
 
 ```txt
-[#<Nokogiri::XML::Element:0x3fdf31ee8eb4 name="h2" attributes=[#<Nokogiri::XML::Attr:0x3fdf31ee8e28 name="class" value="inlineMobileLeft-2Yo002 imageTextBlockGrid2-3jXtmC">] children=[#<Nokogiri::XML::Text:0x3fdf31ee8900 "\n          $1M in Scholarships for Women\n        ">]>, #<Nokogiri::XML::Element:0x3fdf31ee8748 name="h2" attributes=[#<Nokogiri::XML::Attr:0x3fdf31ee86e4 name="class" value="tout__label heading heading--level-4">] children=[#<Nokogiri::XML::Text:0x3fdf31ee8270 "\n          What Kind of Coding Program is Right for You?\n        ">]>, #<Nokogiri::XML::Element:0x3fdf31ee807c name="h2" attributes=[#<Nokogiri::XML::Attr:0x3fdf31eedfcc name="class" value="tout__label heading heading--level-4">] children=[#<Nokogiri::XML::Text:0x3fdf31eeda90 "\n          Attend an Online Info Session\n        ">]>, #<Nokogiri::XML::Element:0x3fdf31eed8d8 name="h2" attributes=[#<Nokogiri::XML::Attr:0x3fdf31eed860 name="class" value="tout__label heading heading--level-4">] children=[#<Nokogiri::XML::Text:0x3fdf31eed43c "\n          Coding Bootcamp Prep\n        ">]>, #<Nokogiri::XML::Element:0x3fdf31eed284 name="h2" attributes=[#<Nokogiri::XML::Attr:0x3fdf31eed220 name="class" value="tout__label heading heading--level-4">] children=[#<Nokogiri::XML::Text:0x3fdf31eecdc0 "\n          Online Software Engineering\n        ">]>, #<Nokogiri::XML::Element:0x3fdf31eecc1c name="h2" attributes=[#<Nokogiri::XML::Attr:0x3fdf31eecba4 name="class" value="tout__label heading heading--level-4">] children=[#<Nokogiri::XML::Text:0x3fdf31eec744 "\n          Data Science Bootcamp Prep\n        ">]>, #<Nokogiri::XML::Element:0x3fdf31eec5a0 name="h2" attributes=[#<Nokogiri::XML::Attr:0x3fdf31eec53c name="class" value="tout__label heading heading--level-4">] children=[#<Nokogiri::XML::Text:0x3fdf31ef3fbc "\n          Online Data Science\n        ">]>]
+[[#<Nokogiri::XML::Element:0x58c name="div" attributes=[#<Nokogiri::XML::Attr:0x208 name="class" value="inlineMobileLeft-2Yo002 imageTextBlockGrid2-3jXtmC">] children=...
 ```
 
 Instead of just outputting the results of `doc.css`, if we assign them to a
@@ -534,10 +394,10 @@ end
 We'd see something like this:
 
 ```text
-Software EngineeringLaunch your career as a full-stack web developer ...
-Data ScienceOur full-time data science program that gives students ...
-Cybersecurity AnalyticsOver 12 intense weeks on campus at Flatiron ...
-Cybersecurity EngineeringFast-track to the skills you need for a new ...
+Software EngineeringLaunch your career as a full-stack...
+Data ScienceOur data science program gives students the...
+Cybersecurity EngineeringLaunch into one of the top...
+Product DesignStart a career in product design and learn...
 ```
 
 Not _exactly_ the course listing as it scraped some other content as well - a
@@ -557,7 +417,7 @@ p doc.css(".inlineMobileLeft-2Yo002.imageTextBlockGrid2-3jXtmC")[0]
 We get the following:
 
 ```text
-#<Nokogiri::XML::Element:0x3fc3494ba054 name="div" attributes=[#<Nokogiri::XML::Attr:0x3fc3494ba298 name="class" value="inlineMobileLeft-2Yo002 imageTextBlockGrid2-3jXtmC">] children=[#<Nokogiri::XML::Element:0x3fc3494abd88 name="div" attributes=[#<Nokogiri::XML::Attr:0x3fc3494abd24 name="class" value="media-3NKI6- horizontalImageContainer-1a2NpA">]...
+#<Nokogiri::XML::Element:0x58c name="div" attributes=[#<Nokogiri::XML::Attr:0x208 name="class" value="inlineMobileLeft-2Yo002 imageTextBlockGrid2-3jXtmC">] children=...
 ```
 
 This is an XML element. XML stands for Extensible Markup Language. Just like
@@ -586,7 +446,7 @@ Since this example doesn't have any attributes besides the CSS classes, we just
 get back the classes we already know:
 
 ```text
-{"class"=>#<Nokogiri::XML::Attr:0x3fd0e50e1b04 name="class" value="inlineMobileLeft-2Yo002 imageTextBlockGrid2-3jXtmC">}
+{"class"=>#<Nokogiri::XML::Attr:0x208 name="class" value="inlineMobileLeft-2Yo002 imageTextBlockGrid2-3jXtmC">}
 ```
 
 One last but important method to note is `children`. Adding `children` will
